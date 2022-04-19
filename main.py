@@ -10,6 +10,9 @@ environ['timer'] = "0"
 
 
 class mc:
+    foundlist = list()
+    totalchecks = list()
+
     def logo(self):
         print("""
  _  _   ___  ___  _  _  ____  ____  ____  ____ 
@@ -37,20 +40,28 @@ class mc:
 
     def printifdomainexists(self,completedomain):
         exists = mc.doesexist(completedomain)
-        linecolor = Fore.GREEN
+        mc.totalchecks.append(exists)
+        alreadyfound = ""
+        if exists not in mc.foundlist:
+            mc.foundlist.append(exists)
+        else:
+            alreadyfound = Fore.YELLOW+Style.DIM
+
+        linecolor = Fore.GREEN+Style.BRIGHT
         if exists == "cannot resolve host":
             linecolor = Fore.RED
+            alreadyfound = Fore.RED
         if linecolor == Fore.RED:
             if mc.getprintnotfoundmode() == False:
-                print(f"{linecolor}{completedomain} -> {exists}"+(" "*20), end="\r")
+                print(f"{Style.RESET_ALL}{linecolor}{alreadyfound}{completedomain} -> {exists}"+(" "*20), end="\r")
             else:
-                print(f"{linecolor}{completedomain} -> {exists}")
+                print(f"{Style.RESET_ALL}{linecolor}{alreadyfound}{completedomain} -> {exists}")
             return 0
         else:
             if mc.getprintnotfoundmode() == False:
-                print(f"{linecolor}{completedomain} -> {exists}"+(" "*20))
+                print(f"{Style.RESET_ALL}{linecolor}{alreadyfound}{completedomain} -> {exists}"+(" "*20))
             else:
-                print(f"{linecolor}{completedomain} -> {exists}")
+                print(f"{Style.RESET_ALL}{linecolor}{alreadyfound}{completedomain} -> {exists}")
             return 1
 
     
@@ -72,6 +83,8 @@ class mc:
                     found += 1
 
         print("all done, found: "+str(found)+(" "*50))
+        print("unique ips found: "+str(len(mc.foundlist)-1))
+        print("total checks: "+str(len(mc.totalchecks)-1))
         environ['timer'] = str(int(time()) - int(getenv('timer')))
         print("checking opreation took "+getenv('timer')+" seconds")
                 
