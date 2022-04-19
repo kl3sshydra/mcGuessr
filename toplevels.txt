@@ -1,0 +1,6 @@
+net
+org
+com
+it
+fr
+network

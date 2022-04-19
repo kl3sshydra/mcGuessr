@@ -1,0 +1,14 @@
+premium
+dedi1
+dedi2
+contabo
+play
+play-
+mc
+mc-
+premium
+admin
+build
+builder
+server
+phpmyadmin
