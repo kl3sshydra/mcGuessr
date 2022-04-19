@@ -2,7 +2,6 @@ import socket, sys
 from os import system, environ, getenv
 from platform import platform
 from colorama import *
-from timeout import *
 from time import time
 init(autoreset=True)
 
@@ -31,7 +30,7 @@ class mc:
 
 
     def clearscreen(self):
-        if "windows" in platform():
+        if "windows" in platform().lower():
             system("cls")
         else:
             system("clear")
@@ -80,9 +79,8 @@ class mc:
 
     def doesexist(self,domain):
         try:
-            with raise_on_timeout(0.5):
-                return socket.gethostbyname(domain)
-        except OSError:
+            return socket.gethostbyname(domain)
+        except socket.gaierror:
             return "cannot resolve host"     
         
 
