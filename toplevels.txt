@@ -4,3 +4,5 @@ com
 it
 fr
 network
+xyz
+me
