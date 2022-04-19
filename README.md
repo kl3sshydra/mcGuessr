@@ -10,3 +10,8 @@ cd mcGuessr
 bash setup.sh
 python3 main.py
 ```
+
+# Options
+if you want to print only the found domains, just launch this program without any arguments.<br>
+if you want to print both the founds and not founds, do:<br>
+```python3 main.py --print-not-found```
