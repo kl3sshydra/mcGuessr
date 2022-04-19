@@ -10,5 +10,6 @@ premium
 admin
 build
 builder
+jugar
 server
 phpmyadmin
