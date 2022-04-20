@@ -1,8 +1,11 @@
-import socket, sys
+import socket
+import sys
 from os import system, environ, getenv
 from platform import platform
 from colorama import *
+import ctypes
 from time import time
+import threading
 init(autoreset=True)
 
 
@@ -25,11 +28,12 @@ class mc:
 
         """)
 
-    def getprintnotfoundmode(self):
-        try:
-            return sys.argv[1] == "--print-not-found"
-        except:
-            return False
+    def setconsoletitle(self,text):
+        if "windows" in platform().lower():
+            ctypes.windll.kernel32.SetConsoleTitleA("My New Title")
+        else:
+            sys.stdout.write(f"\x1b]2;{text}\x07")
+
 
 
     def clearscreen(self):
@@ -51,36 +55,31 @@ class mc:
         if exists == "cannot resolve host":
             linecolor = Fore.RED
             alreadyfound = Fore.RED
+
+        
         if linecolor == Fore.RED:
-            if mc.getprintnotfoundmode() == False:
-                print(f"{Style.RESET_ALL}{linecolor}{alreadyfound}{completedomain} -> {exists}"+(" "*20), end="\r")
-            else:
-                print(f"{Style.RESET_ALL}{linecolor}{alreadyfound}{completedomain} -> {exists}")
             return 0
         else:
-            if mc.getprintnotfoundmode() == False:
-                print(f"{Style.RESET_ALL}{linecolor}{alreadyfound}{completedomain} -> {exists}"+(" "*20))
-            else:
-                print(f"{Style.RESET_ALL}{linecolor}{alreadyfound}{completedomain} -> {exists}")
+            print(f"{Style.RESET_ALL}{linecolor}{alreadyfound}{completedomain} -> {exists}")
             return 1
 
-    
-    def find_sub_and_top(self,sublist,toplist,domain):
+    def nosubdomaincheck(self,domain,toplist):
         found = 0
-
         for sTOP in toplist:
             sTOP = sTOP.strip() 
             onlytopleveldomain = f"{domain}.{sTOP}"
             if mc.printifdomainexists(onlytopleveldomain) == 1:
+                found +=1
+        return found
+    
+    def find_sub_and_top(self,sub,toplist,domain):
+        found = 0
+        
+        for sTOP in toplist:
+            sTOP = sTOP.strip()
+            completedomain = f"{sub}.{domain}.{sTOP}"    
+            if mc.printifdomainexists(completedomain) == 1:
                 found += 1
-
-        for sSUB in sublist:
-            sSUB = sSUB.strip()
-            for sTOP in toplist:
-                sTOP = sTOP.strip()
-                completedomain = f"{sSUB}.{domain}.{sTOP}"    
-                if mc.printifdomainexists(completedomain) == 1:
-                    found += 1
 
         print("all done, found: "+str(found)+(" "*50))
         print("unique ips found: "+str(len(mc.foundlist)-1))
@@ -91,6 +90,7 @@ class mc:
                 
 
     def doesexist(self,domain):
+        mc.setconsoletitle(f"mcGuessr - checking '{domain}'")
         try:
             return socket.gethostbyname(domain)
         except socket.gaierror:
@@ -102,13 +102,44 @@ class mc:
         content = f.readlines()
         f.close()
         return content
+
+    
+    def findtopwithsub(self,sub,toplist,domain):
+        mc.find_sub_and_top(sub,toplist,domain)
     
     def main(self):
         mc.clearscreen()
         mc.logo()
+        mc.setconsoletitle("Started mcGuessr by kl3sshydra")
         domain = input("insert domain: ")
         environ['timer'] = str(int(time()))
-        mc.find_sub_and_top(mc.getwordlist("subdomains.txt"),mc.getwordlist("toplevels.txt"),domain)
+
+        wrdlist = input("insert sub domain list: ")
+        if wrdlist == "":
+            wrdlist = "subdomains.txt"
+        tplist = input("insert top-level domain list: ")
+        if tplist == "":
+            tplist = "toplevels.txt"
+        toplist = mc.getwordlist(tplist)
+        try:
+            threadsnumber = int(input("insert thread number: "))
+        except:
+            threadsnumber = 20
+        threading.Thread(target=mc.nosubdomaincheck, args=(domain,toplist,)).start()
+        linenumber = 0
+        for x in open(wrdlist,'r').readlines():
+            linenumber += 1
+        linesperthread = int(linenumber/threadsnumber)
+        fp = open(wrdlist)
+        linecounter = 0
+        for i, line in enumerate(fp):
+            line = line.strip()
+            linecounter += 1
+            if linecounter > linesperthread:
+                linecounter = 0
+            else:
+                threading.Thread(target=mc.findtopwithsub, args=(line,toplist,domain,)).start()
+
 
 mc = mc()
 try:
