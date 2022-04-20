@@ -47,7 +47,7 @@ python3 {sys.argv[0]} --unique -> shows only unique ips
 
     def setconsoletitle(self,text):
         if "windows" in platform().lower():
-            ctypes.windll.kernel32.SetConsoleTitleA("My New Title")
+            ctypes.windll.kernel32.SetConsoleTitleA(text)
         else:
             sys.stdout.write(f"\x1b]2;{text}\x07")
 
