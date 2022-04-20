@@ -105,7 +105,10 @@ python3 {sys.argv[0]} --unique -> shows only unique ips
         print("total checks: "+str(len(mc.totalchecks)-1))
         environ['timer'] = str(int(time()) - int(getenv('timer')))
         print("checking opreation took "+getenv('timer')+" seconds")
-                
+
+    
+    def countpossiblecombinations(self,sublist,toplist):
+        print(f"trying {str(len(sublist)*len(toplist))} possible combinations")
                 
 
     def doesexist(self,domain):
@@ -146,6 +149,7 @@ python3 {sys.argv[0]} --unique -> shows only unique ips
             threadsnumber = int(input("insert thread number: "))
         except:
             threadsnumber = 20
+        mc.countpossiblecombinations(mc.getwordlist(wrdlist),toplist)
         threading.Thread(target=mc.nosubdomaincheck, args=(domain,toplist,)).start()
         linenumber = 0
         for x in open(wrdlist,'r').readlines():
