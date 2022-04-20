@@ -112,7 +112,7 @@ python3 {sys.argv[0]} --unique -> shows only unique ips
                 
 
     def doesexist(self,domain):
-        mc.setconsoletitle(f"mcGuessr - checking '{domain}'")
+        mc.setconsoletitle(f"(runtime {str(int(time()) - int(getenv('timer')))} seconds) mcGuessr - checking '{domain}'")
         try:
             return socket.gethostbyname(domain)
         except socket.gaierror:
