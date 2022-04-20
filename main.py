@@ -10,6 +10,7 @@ init(autoreset=True)
 
 
 environ['timer'] = "0"
+environ['onlyunique'] = "false"
 
 
 class mc:
@@ -28,13 +29,27 @@ class mc:
 
         """)
 
+    def getpossibleparameters(self):
+        try:
+            if sys.argv[1] == "--unique":
+                environ['onlyunique'] = "true"
+        except:
+            pass
+        try:
+            if sys.argv[1] == "-h":
+                print(f"""Usage: 
+python3 {sys.argv[0]} -> shows both unique and already-found ips
+python3 {sys.argv[0]} --unique -> shows only unique ips
+                """)
+                return "quit"
+        except:
+            pass
+
     def setconsoletitle(self,text):
         if "windows" in platform().lower():
             ctypes.windll.kernel32.SetConsoleTitleA("My New Title")
         else:
             sys.stdout.write(f"\x1b]2;{text}\x07")
-
-
 
     def clearscreen(self):
         if "windows" in platform().lower():
@@ -60,7 +75,11 @@ class mc:
         if linecolor == Fore.RED:
             return 0
         else:
-            print(f"{Style.RESET_ALL}{linecolor}{alreadyfound}{completedomain} -> {exists}")
+            if alreadyfound == Fore.YELLOW+Style.DIM:
+                if getenv('onlyunique') == "false":
+                    print(f"{Style.RESET_ALL}{linecolor}{alreadyfound}{completedomain} -> {exists}")        
+            else:
+                print(f"{Style.RESET_ALL}{linecolor}{alreadyfound}{completedomain} -> {exists}")
             return 1
 
     def nosubdomaincheck(self,domain,toplist):
@@ -109,6 +128,8 @@ class mc:
     
     def main(self):
         mc.clearscreen()
+        if mc.getpossibleparameters() == "quit":
+            sys.exit()
         mc.logo()
         mc.setconsoletitle("Started mcGuessr by kl3sshydra")
         domain = input("insert domain: ")
