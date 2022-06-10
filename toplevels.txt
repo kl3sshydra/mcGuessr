@@ -41,9 +41,6 @@ co
 my.pebble.host
 gq
 ml
-server.pro 
-aternos.me
-ploudos.me
 cf
 ir
 cc
